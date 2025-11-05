@@ -1,4 +1,4 @@
-import { type Plugin } from "vite"
+import type { ModuleNode, Plugin } from "vite"
 
 export const cssExtractPlugin = (): Plugin => {
     const virtualModuleId = "@aziis98/preact-css-extract/comptime"
@@ -24,29 +24,19 @@ export const cssExtractPlugin = (): Plugin => {
     return {
         name: "vite-plugin-css-extract",
 
-        async handleHotUpdate(ctx) {
-            console.log("Handling HMR for:", ctx.file)
+        async handleHotUpdate({ server, modules, timestamp }) {
+            const invalidatedModules = new Set<ModuleNode>()
 
-            // Track CSS files that contain @extracted-css
-            if (ctx.file.endsWith(".css") && ctx.read) {
-                const content = await ctx.read()
-                if (typeof content === "string" && content.includes("@extracted-css")) {
-                    cssFilePaths.add(ctx.file)
-                }
-            }
-
-            // When a JS/TS file changes, invalidate all CSS files with @extracted-css
-            if (ctx.file.match(/\.(js|jsx|ts|tsx)$/) && !ctx.file.includes("node_modules")) {
-                if (cssFilePaths.size > 0) {
-                    // Invalidate all CSS files to trigger their re-transformation
-                    for (const cssFile of cssFilePaths) {
-                        const cssModule = ctx.server.moduleGraph.getModuleById(cssFile)
-                        if (cssModule) {
-                            ctx.server.moduleGraph.invalidateModule(cssModule)
-                        }
+            if (modules.some(m => m.id && m.id.match(/\.(js|jsx|ts|tsx)$/) && !m.id.includes("node_modules"))) {
+                for (const cssFile of cssFilePaths) {
+                    const cssModule = server.moduleGraph.getModuleById(cssFile)
+                    if (cssModule) {
+                        server.moduleGraph.invalidateModule(cssModule, invalidatedModules, timestamp, true)
                     }
                 }
             }
+
+            return modules
         },
 
         resolveId(id) {
@@ -91,6 +81,9 @@ export const cssExtractPlugin = (): Plugin => {
             }
 
             if (id.match(/\.css$/) && code.includes("@extracted-css")) {
+                // console.log("Transforming CSS file for @extracted-css:", id)
+                cssFilePaths.add(id)
+
                 const combinedStyles = Array.from(collectedStyles.values()).join("\n\n")
                 return code.replace("@extracted-css", combinedStyles)
             }
