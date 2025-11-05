@@ -1,0 +1,6 @@
+{
+    "name": "@aziis98/preact-css-extract",
+    "version": "0.0.1",
+    "exports": "./index.ts",
+    "license": "MIT"
+}
