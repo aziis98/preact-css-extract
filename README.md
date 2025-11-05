@@ -1,5 +1,7 @@
 # preact-css-extract
 
+[![JSR](https://jsr.io/badges/@aziis98/preact-css-extract)](https://jsr.io/package/@aziis98/preact-css-extract)
+
 This package provides the following two main features: a vite plugin for compile-time css extraction and a custom preact `classList` prop integration based on `clsx`.
 
 This is inspired by EmotionCSS (that is a bit outdated to my understanding and it doesn't support ViteJS and Preact together) and VueJS class attributes. Also I don't want to use heavy css-in-js solutions or TailwindCSS (for [various](https://www.aleksandrhovhannisyan.com/blog/why-i-dont-like-tailwind-css/) [reasons](https://jakelazaroff.com/words/tailwind-is-a-leaky-abstraction/)).
@@ -131,7 +133,7 @@ pnpm jsr add @aziis98/preact-css-extract
 bunx jsr add @aziis98/preact-css-extract
 ```
 
-<sup>1</sup>: Please somebody explain to me how to package things like this to npm without going mad...
+<sup>1</sup>Please somebody explain to me how to package things like this to npm without going mad...
 
 ## Plugin Setup
 
