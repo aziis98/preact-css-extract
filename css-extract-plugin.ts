@@ -1,4 +1,4 @@
-import type { Plugin } from "vite"
+import { type Plugin } from "vite"
 
 export const cssExtractPlugin = (): Plugin => {
     const virtualModuleId = "css-extract"
