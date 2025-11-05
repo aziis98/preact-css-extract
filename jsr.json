@@ -1,6 +1,6 @@
 {
     "name": "@aziis98/preact-css-extract",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "exports": {
         ".": "./index.ts",
         "./comptime": "./comptime/index.ts"
