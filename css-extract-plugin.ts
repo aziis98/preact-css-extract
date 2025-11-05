@@ -1,7 +1,7 @@
 import { type Plugin } from "vite"
 
 export const cssExtractPlugin = (): Plugin => {
-    const virtualModuleId = "css-extract"
+    const virtualModuleId = "@aziis98/preact-css-extract/comptime"
     const resolvedVirtualModuleId = "\0" + virtualModuleId
 
     const collectedStyles = new Map()
