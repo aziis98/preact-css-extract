@@ -3,7 +3,7 @@
         // Environment setup & latest features
         "lib": ["ESNext"],
         "target": "ESNext",
-        "module": "Preserve",
+        "module": "ESNext",
         "moduleDetection": "force",
 
         // NodeJS typings
@@ -14,11 +14,19 @@
 
         "allowJs": true,
 
-        // Bundler mode
-        "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "verbatimModuleSyntax": true,
-        "noEmit": true,
+        // Output configuration
+        "outDir": "./dist",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "removeComments": false,
+
+        // Module resolution
+        "moduleResolution": "node",
+        "allowImportingTsExtensions": false,
+        "verbatimModuleSyntax": false,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
 
         // Best practices
         "strict": true,
@@ -26,10 +34,13 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedIndexedAccess": true,
         "noImplicitOverride": true,
+        "forceConsistentCasingInFileNames": true,
 
         // Some stricter flags (disabled by default)
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "noPropertyAccessFromIndexSignature": false
-    }
+    },
+    "include": ["*.ts", "comptime/**/*.ts", "global.d.ts"],
+    "exclude": ["node_modules", "dist"]
 }

@@ -1,9 +1,53 @@
 {
     "name": "preact-css-extract",
-    "module": "index.ts",
+    "version": "0.0.11",
+    "description": "Compile-time CSS extraction and Preact classList helper for clean component styling",
     "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js"
+        },
+        "./comptime": {
+            "import": "./dist/comptime/index.js"
+        }
+    },
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist",
+        "LICENSE",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "rollup -c",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "preact",
+        "css",
+        "vite",
+        "styling",
+        "css-in-js",
+        "compile-time"
+    ],
+    "author": "aziis98",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aziis98/preact-css-extract.git"
+    },
+    "bugs": {
+        "url": "https://github.com/aziis98/preact-css-extract/issues"
+    },
+    "homepage": "https://github.com/aziis98/preact-css-extract#readme",
     "devDependencies": {
-        "@types/bun": "latest"
+        "@rollup/plugin-typescript": "^12.3.0",
+        "@types/bun": "latest",
+        "rollup": "^4.52.5",
+        "rollup-plugin-dts": "^6.2.3",
+        "tslib": "^2.8.1",
+        "typescript": "^5"
     },
     "peerDependencies": {
         "typescript": "^5"

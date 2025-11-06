@@ -1,7 +1,5 @@
 # preact-css-extract
 
-[![JSR](https://jsr.io/badges/@aziis98/preact-css-extract)](https://jsr.io/package/@aziis98/preact-css-extract)
-
 This package provides the following two main features: a vite plugin for compile-time css extraction and a custom preact `classList` prop integration based on `clsx`.
 
 This is inspired by EmotionCSS (that is a bit outdated to my understanding and it doesn't support ViteJS and Preact together) and VueJS class attributes. Also I don't want to use heavy css-in-js solutions or TailwindCSS (for [various](https://www.aleksandrhovhannisyan.com/blog/why-i-dont-like-tailwind-css/) [reasons](https://jakelazaroff.com/words/tailwind-is-a-leaky-abstraction/)).
@@ -21,7 +19,7 @@ This project provides tools for managing component styling at build time while m
 Define styles using the `css` template literal in your component files:
 
 ```tsx
-import { css } from "@aziis98/preact-css-extract/comptime"
+import { css } from "preact-css-extract/comptime"
 
 const buttonStyles = css`
     padding: 8px 16px;
@@ -90,7 +88,7 @@ Example usage in a css file:
 To enable the Preact `clsx` integration with the `classList` attribute, set it up as follows. In your application entry point, add:
 
 ```tsx
-import { setupPreactClasslist } from "@aziis98/preact-css-extract"
+import { setupPreactClasslist } from "preact-css-extract"
 
 setupPreactClasslist()
 ```
@@ -98,7 +96,7 @@ setupPreactClasslist()
 And add a `types.d.ts` file to your project with the following content to extend the Preact JSX types:
 
 ```ts
-/// <reference path="../node_modules/@aziis98/preact-css-extract/global.d.ts" />
+/// <reference path="../node_modules/preact-css-extract/dist/global.d.ts" />
 ```
 
 Then use the `classList` prop with object notation, here is an example:
@@ -123,17 +121,15 @@ This automatically merges with any existing `class` prop using clsx for proper c
 
 ## Installation
 
-This package is hosted on JSR<sup>1</sup> and can be installed via npm, yarn, pnpm, or bun:
+Install the package using npm, yarn, pnpm, or bun:
 
 ```bash
-npx jsr add @aziis98/preact-css-extract
+npm install preact-css-extract
 # or
-yarn jsr add @aziis98/preact-css-extract
-pnpm jsr add @aziis98/preact-css-extract
-bunx jsr add @aziis98/preact-css-extract
+yarn add preact-css-extract
+pnpm add preact-css-extract
+bun add preact-css-extract
 ```
-
-<sup>1</sup>Please somebody explain to me how to package things like this to npm without going mad...
 
 ## Plugin Setup
 
@@ -142,7 +138,7 @@ To set up the CSS Extract Plugin in your Vite configuration, add the following t
 ```ts
 import { defineConfig } from "vite"
 import preact from "@preact/preset-vite"
-import { cssExtractPlugin } from "@aziis98/preact-css-extract"
+import { cssExtractPlugin } from "preact-css-extract"
 
 export default defineConfig({
     plugins: [preact(), cssExtractPlugin()],

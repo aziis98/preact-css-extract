@@ -4,7 +4,7 @@ import { type PluginOption } from "vite"
 const REGEX_JS_COMMENT = /\/\*[\s\S]*?\*\/|\/\/.*/g
 const REGEX_CSS_TEMPLATE_LITERAL = /css\`([^\`]*)\`/gs
 
-const CSS_COMPTIME = "@aziis98/preact-css-extract/comptime"
+const CSS_COMPTIME = "preact-css-extract/comptime"
 const CSS_COMPTIME_RESOLVED = "\0" + CSS_COMPTIME
 
 function hashCSS(cssContent: string) {
@@ -34,7 +34,7 @@ export const cssExtractPlugin = (): PluginOption => {
             resolveId(id) {
                 // console.log("Resolving ID:", id)
 
-                // Resolve the "@aziis98/preact-css-extract/comptime" virtual module
+                // Resolve the "preact-css-extract/comptime" virtual module
                 if (id === CSS_COMPTIME) {
                     return CSS_COMPTIME_RESOLVED
                 }

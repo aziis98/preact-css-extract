@@ -3,7 +3,7 @@
  * The CSS will be extracted during build and injected at the @extracted-css directive.
  *
  * ```ts
- * import { css } from '@aziis98/preact-css-extract'
+ * import { css } from 'preact-css-extract/comptime'
  *
  * const styles = css`
  *     .button {

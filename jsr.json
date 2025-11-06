@@ -1,9 +1,0 @@
-{
-    "name": "@aziis98/preact-css-extract",
-    "version": "0.0.11",
-    "exports": {
-        ".": "./index.ts",
-        "./comptime": "./comptime/index.ts"
-    },
-    "license": "MIT"
-}
