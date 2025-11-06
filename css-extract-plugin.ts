@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises"
+import { readFile } from "fs/promises"
 import { type PluginOption } from "vite"
 
 const REGEX_JS_COMMENT = /\/\*[\s\S]*?\*\/|\/\/.*/g
