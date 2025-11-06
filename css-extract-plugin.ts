@@ -1,7 +1,9 @@
 import { readFile } from "node:fs/promises"
 import { type PluginOption } from "vite"
 
-const CSS_TEMPLATE_LITERAL_REGEX = /css\`([^\`]*)\`/gs
+const REGEX_JS_COMMENT = /\/\*[\s\S]*?\*\/|\/\/.*/g
+const REGEX_CSS_TEMPLATE_LITERAL = /css\`([^\`]*)\`/gs
+
 const CSS_COMPTIME = "@aziis98/preact-css-extract/comptime"
 const CSS_COMPTIME_RESOLVED = "\0" + CSS_COMPTIME
 
@@ -60,12 +62,14 @@ export const cssExtractPlugin = (): PluginOption => {
 
                 // Collect css template literal usages in JS/TS files
                 if (id.match(/\.(js|jsx|ts|tsx)$/) && !id.includes("node_modules")) {
-                    const source = await readFile(id, "utf-8")
+                    let source = await readFile(id, "utf-8")
+
+                    source = source.replace(REGEX_JS_COMMENT, "")
 
                     // console.log("Collecting CSS usages from file:", id)
                     let match
 
-                    while ((match = CSS_TEMPLATE_LITERAL_REGEX.exec(source)) !== null) {
+                    while ((match = REGEX_CSS_TEMPLATE_LITERAL.exec(source)) !== null) {
                         filesContainingCssTemplateLiterals.add(id)
 
                         const cssContent = match[1] || ""
@@ -95,7 +99,11 @@ export const cssExtractPlugin = (): PluginOption => {
                     let match
                     let transformedCode = code
 
-                    while ((match = CSS_TEMPLATE_LITERAL_REGEX.exec(code)) !== null) {
+                    if (REGEX_CSS_TEMPLATE_LITERAL.test(code)) {
+                        transformedCode = transformedCode.replace(REGEX_JS_COMMENT, "")
+                    }
+
+                    while ((match = REGEX_CSS_TEMPLATE_LITERAL.exec(code)) !== null) {
                         const cssContent = match[1] || ""
 
                         const { className, wrappedCss } = generateCSS(cssContent)
