@@ -6,6 +6,9 @@
         "module": "Preserve",
         "moduleDetection": "force",
 
+        // NodeJS typings
+        "types": ["node"],
+
         "jsx": "react-jsx",
         "jsxImportSource": "preact",
 
