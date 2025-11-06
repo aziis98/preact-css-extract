@@ -1,5 +1,7 @@
 # preact-css-extract
 
+![NPM Version](https://img.shields.io/npm/v/preact-css-extract)
+
 This package provides the following two main features: a vite plugin for compile-time css extraction and a custom preact `classList` prop integration based on `clsx`.
 
 This is inspired by EmotionCSS (that is a bit outdated to my understanding and it doesn't support ViteJS and Preact together) and VueJS class attributes. Also I don't want to use heavy css-in-js solutions or TailwindCSS (for [various](https://www.aleksandrhovhannisyan.com/blog/why-i-dont-like-tailwind-css/) [reasons](https://jakelazaroff.com/words/tailwind-is-a-leaky-abstraction/)).
@@ -19,24 +21,6 @@ This project provides tools for managing component styling at build time while m
 Define styles using the `css` template literal in your component files:
 
 ```tsx
-import { css } from "preact-css-extract/comptime"
-
-const buttonStyles = css`
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-`
-
-export function Button() {
-    return <button class={buttonStyles}>Click me</button>
-}
-```
-
-You can also put css template literals directly in the `class` attribute:
-
-```tsx
 export function Alert() {
     return (
         <div
@@ -54,6 +38,28 @@ export function Alert() {
             Warning!
         </div>
     )
+}
+```
+
+As strings are just replaced with their generated class names, you can also define styles in variables for reuse:
+
+```tsx
+import { css } from "preact-css-extract/comptime"
+
+const buttonStyles = css`
+    padding: 8px 16px;
+    background-color: royalblue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+
+    &:hover {
+        background-color: darkblue;
+    }
+`
+
+export function Button() {
+    return <button class={buttonStyles}>Click me</button>
 }
 ```
 
@@ -83,6 +89,40 @@ Example usage in a css file:
 }
 ```
 
+Which results in a final CSS output similar to:
+
+```css
+@layer base, components, utilities;
+
+@layer base {
+    body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background-color: #f0f0f0;
+    }
+}
+
+@layer components {
+    .css-1a2b3c {
+        padding: 8px 16px;
+        background-color: royalblue;
+        color: white;
+        border: none;
+        border-radius: 4px;
+
+        &:hover {
+            background-color: darkblue;
+        }
+    }
+}
+
+@layer utilities {
+    .font-bold {
+        font-weight: bold;
+    }
+}
+```
+
 ### ClassList Attribute
 
 To enable the Preact `clsx` integration with the `classList` attribute, set it up as follows. In your application entry point, add:
@@ -96,7 +136,7 @@ setupPreactClasslist()
 And add a `types.d.ts` file to your project with the following content to extend the Preact JSX types:
 
 ```ts
-/// <reference path="../node_modules/preact-css-extract/classlist.d.ts" />
+/// <reference path="../node_modules/preact-css-extract/preact-classlist.d.ts" />
 ```
 
 Then use the `classList` prop with object notation, here is an example:
@@ -137,11 +177,12 @@ To set up the CSS Extract Plugin in your Vite configuration, add the following t
 
 ```ts
 import { defineConfig } from "vite"
-import preact from "@preact/preset-vite"
+
 import { cssExtractPlugin } from "preact-css-extract/plugin"
+import preact from "@preact/preset-vite"
 
 export default defineConfig({
-    plugins: [preact(), cssExtractPlugin()],
+    plugins: [cssExtractPlugin(), preact()],
 })
 ```
 
