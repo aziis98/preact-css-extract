@@ -1,53 +1,47 @@
-import { type ModuleNode, type PluginOption } from "vite"
+import { readFile } from "node:fs/promises"
+import { type PluginOption } from "vite"
+
+const CSS_TEMPLATE_LITERAL_REGEX = /css\`([^\`]*)\`/gs
+const CSS_COMPTIME = "@aziis98/preact-css-extract/comptime"
+const CSS_COMPTIME_RESOLVED = "\0" + CSS_COMPTIME
+
+function hashCSS(cssContent: string) {
+    const hash = Array.from(cssContent.replace(/\s+/g, " ")).reduce(
+        (s, c) => (Math.imul(31, s) + c.charCodeAt(0)) | 0,
+        0
+    )
+    return Math.abs(hash).toString(36)
+}
+
+function generateCSS(cssContent: string) {
+    const className = "css-" + hashCSS(cssContent)
+    const wrappedCss = `.${className} {\n${cssContent}\n}`
+    return { className, wrappedCss }
+}
 
 export const cssExtractPlugin = (): PluginOption => {
-    const virtualModuleId = "@aziis98/preact-css-extract/comptime"
-    const resolvedVirtualModuleId = "\0" + virtualModuleId
-
     const collectedStyles = new Map()
+
+    const filesContainingCssTemplateLiterals: Set<string> = new Set()
     let cssFilePaths: Set<string> = new Set()
-
-    function generateClassName(cssContent: string) {
-        const hash = Array.from(cssContent.replace(/\s+/g, " ")).reduce(
-            (s, c) => (Math.imul(31, s) + c.charCodeAt(0)) | 0,
-            0
-        )
-        return `css-${Math.abs(hash).toString(36)}`
-    }
-
-    function processCss(cssContent: string) {
-        const className = generateClassName(cssContent)
-        const wrappedCss = `.${className} {\n${cssContent}\n}`
-        return { className, wrappedCss }
-    }
 
     return [
         {
-            name: "vite-plugin-css-extract:collect-styles",
-
-            async handleHotUpdate({ server, modules, timestamp }) {
-                const invalidatedModules = new Set<ModuleNode>()
-
-                if (modules.some(m => m.id && m.id.match(/\.(js|jsx|ts|tsx)$/) && !m.id.includes("node_modules"))) {
-                    for (const cssFile of cssFilePaths) {
-                        const cssModule = server.moduleGraph.getModuleById(cssFile)
-                        if (cssModule) {
-                            server.moduleGraph.invalidateModule(cssModule, invalidatedModules, timestamp, true)
-                        }
-                    }
-                }
-
-                return modules
-            },
+            name: "vite-plugin-css-extract",
 
             resolveId(id) {
-                if (id === virtualModuleId) {
-                    return resolvedVirtualModuleId
+                // console.log("Resolving ID:", id)
+
+                // Resolve the "@aziis98/preact-css-extract/comptime" virtual module
+                if (id === CSS_COMPTIME) {
+                    return CSS_COMPTIME_RESOLVED
                 }
             },
 
-            load(id) {
-                if (id === resolvedVirtualModuleId) {
+            async load(id) {
+                // console.log("Loading module ID:", id)
+
+                if (id === CSS_COMPTIME_RESOLVED) {
                     return `
                     export function css(strings, ...values) {
                         let result = strings[0];
@@ -63,50 +57,71 @@ export const cssExtractPlugin = (): PluginOption => {
                     }
                 `
                 }
+
+                // Collect css template literal usages in JS/TS files
+                if (id.match(/\.(js|jsx|ts|tsx)$/) && !id.includes("node_modules")) {
+                    const source = await readFile(id, "utf-8")
+
+                    // console.log("Collecting CSS usages from file:", id)
+                    let match
+
+                    while ((match = CSS_TEMPLATE_LITERAL_REGEX.exec(source)) !== null) {
+                        filesContainingCssTemplateLiterals.add(id)
+
+                        const cssContent = match[1] || ""
+
+                        const { className, wrappedCss } = generateCSS(cssContent)
+                        collectedStyles.set(className, wrappedCss)
+
+                        // console.log(`Collected CSS for class ${className} from file ${id}`)
+                    }
+                }
+
+                if (id.match(/\.css$/)) {
+                    const source = await readFile(id, "utf-8")
+                    if (source.includes("@extracted-css")) {
+                        cssFilePaths.add(id)
+                        // console.log("Registered CSS file for extraction:", id)
+                    }
+                }
+
+                return null
             },
 
-            transform: {
-                order: "pre",
-                handler(code, id) {
-                    if (id.match(/\.(js|jsx|ts|tsx)$/) && !id.includes("node_modules")) {
-                        const cssRegex = /css\`([^\`]*)\`/gs
-                        let match
-                        let transformedCode = code
+            transform(code, id) {
+                if (id.match(/\.(js|jsx|ts|tsx)$/) && !id.includes("node_modules")) {
+                    // console.log("Transforming JS/TS file for CSS extraction:", id)
 
-                        while ((match = cssRegex.exec(code)) !== null) {
-                            const cssContent = match[1] || ""
-                            const { className, wrappedCss } = processCss(cssContent)
-                            collectedStyles.set(className, wrappedCss)
-                            transformedCode = transformedCode.replace(match[0], `'${className}'`)
-                        }
+                    let match
+                    let transformedCode = code
 
-                        return transformedCode !== code ? transformedCode : null
+                    while ((match = CSS_TEMPLATE_LITERAL_REGEX.exec(code)) !== null) {
+                        const cssContent = match[1] || ""
+
+                        const { className, wrappedCss } = generateCSS(cssContent)
+                        collectedStyles.set(className, wrappedCss)
+
+                        // console.log(`Extracted CSS for class ${className} from file ${id}`)
+
+                        transformedCode = transformedCode.replace(match[0], `'${className}'`)
                     }
 
-                    // if (id.match(/\.css$/) && code.includes("@extracted-css")) {
-                    //     // console.log("Transforming CSS file for @extracted-css:", id)
-                    //     cssFilePaths.add(id)
+                    return transformedCode !== code ? transformedCode : null
+                }
 
-                    //     const combinedStyles = Array.from(collectedStyles.values()).join("\n\n")
-                    //     return code.replace("@extracted-css", combinedStyles)
-                    // }
+                if (id.match(/\.css$/) && code.includes("@extracted-css")) {
+                    // console.log("Transforming CSS file for @extracted-css:", id)
+                    // console.log("Collected styles:", collectedStyles)
 
-                    return null
-                },
-            },
-        },
-        {
-            name: "vite-plugin-css-extract:extract-styles",
-            transform: {
-                order: "post",
-                handler(code, id) {
-                    if (id.match(/\.css$/) && code.includes("@extracted-css")) {
-                        // console.log("Post-transforming CSS file for @extracted-css:", id)
-                        const combinedStyles = Array.from(collectedStyles.values()).join("\n\n")
-                        return code.replace("@extracted-css", combinedStyles)
-                    }
-                    return null
-                },
+                    filesContainingCssTemplateLiterals.forEach(file => {
+                        this.addWatchFile(file)
+                    })
+
+                    const combinedStyles = Array.from(collectedStyles.values()).join("\n\n")
+                    return code.replace("@extracted-css", combinedStyles)
+                }
+
+                return null
             },
         },
     ]
