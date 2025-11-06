@@ -9,6 +9,9 @@
         ".": {
             "import": "./dist/index.js"
         },
+        "./plugin": {
+            "import": "./dist/plugin.js"
+        },
         "./comptime": {
             "import": "./dist/comptime/index.js"
         }

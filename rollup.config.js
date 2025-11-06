@@ -9,7 +9,7 @@ export default [
             format: "es",
             sourcemap: true,
         },
-        external: ["preact", "vite", "clsx", "fs/promises"],
+        external: ["preact", "clsx"],
         plugins: [
             typescript({
                 tsconfig: false,
@@ -49,6 +49,31 @@ export default [
                     lib: ["ES2020"],
                     jsx: "react-jsx",
                     jsxImportSource: "preact",
+                    moduleResolution: "node",
+                    strict: true,
+                    skipLibCheck: true,
+                    allowSyntheticDefaultImports: true,
+                },
+            }),
+        ],
+    },
+    {
+        input: "plugin.ts",
+        output: {
+            file: "dist/plugin.js",
+            format: "es",
+            sourcemap: true,
+        },
+        external: ["vite", "fs/promises"],
+        plugins: [
+            typescript({
+                tsconfig: false,
+                compilerOptions: {
+                    declaration: false,
+                    sourceMap: true,
+                    target: "ES2020",
+                    module: "ES2020",
+                    lib: ["ES2020"],
                     moduleResolution: "node",
                     strict: true,
                     skipLibCheck: true,
@@ -116,6 +141,11 @@ export default [
     {
         input: "preact-classlist.ts",
         output: { file: "dist/preact-classlist.d.ts", format: "es" },
+        plugins: [dts()],
+    },
+    {
+        input: "plugin.ts",
+        output: { file: "dist/plugin.d.ts", format: "es" },
         plugins: [dts()],
     },
     {

@@ -138,7 +138,7 @@ To set up the CSS Extract Plugin in your Vite configuration, add the following t
 ```ts
 import { defineConfig } from "vite"
 import preact from "@preact/preset-vite"
-import { cssExtractPlugin } from "preact-css-extract"
+import { cssExtractPlugin } from "preact-css-extract/plugin"
 
 export default defineConfig({
     plugins: [preact(), cssExtractPlugin()],
