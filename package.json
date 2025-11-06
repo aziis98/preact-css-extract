@@ -1,6 +1,6 @@
 {
     "name": "preact-css-extract",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "description": "Compile-time CSS extraction and Preact classList helper for clean component styling",
     "type": "module",
     "main": "./dist/index.js",
