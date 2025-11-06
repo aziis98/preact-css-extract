@@ -96,7 +96,7 @@ setupPreactClasslist()
 And add a `types.d.ts` file to your project with the following content to extend the Preact JSX types:
 
 ```ts
-/// <reference path="../node_modules/preact-css-extract/dist/global.d.ts" />
+/// <reference path="../node_modules/preact-css-extract/classlist.d.ts" />
 ```
 
 Then use the `classList` prop with object notation, here is an example:

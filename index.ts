@@ -1,1 +1,1 @@
-export { setupPreactClasslist } from "./preact-classlist"
+export * from "./classlist"

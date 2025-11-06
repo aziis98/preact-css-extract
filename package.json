@@ -19,11 +19,12 @@
     "types": "./dist/index.d.ts",
     "files": [
         "dist",
-        "global.d.ts",
+        "preact-classlist.d.ts",
         "LICENSE",
         "README.md"
     ],
     "scripts": {
+        "clean": "rm -rf dist",
         "build": "rollup -c",
         "prepublishOnly": "npm run build"
     },

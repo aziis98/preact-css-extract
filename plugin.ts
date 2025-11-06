@@ -27,6 +27,8 @@ export const cssExtractPlugin = (): PluginOption => {
     const filesContainingCssTemplateLiterals: Set<string> = new Set()
     let cssFilePaths: Set<string> = new Set()
 
+    // console.log("Initializing cssExtractPlugin")
+
     return [
         {
             name: "vite-plugin-css-extract",
@@ -44,20 +46,7 @@ export const cssExtractPlugin = (): PluginOption => {
                 // console.log("Loading module ID:", id)
 
                 if (id === CSS_COMPTIME_RESOLVED) {
-                    return `
-                    export function css(strings, ...values) {
-                        let result = strings[0];
-                        for (let i = 0; i < values.length; i++) {
-                            result += values[i] + strings[i + 1];
-                        }
-
-                        const hash = Array.from(result.replace(/\\s+/g, ' '))
-                            .reduce((s, c) => Math.imul(31, s) + c.charCodeAt(0) | 0, 0)
-                            .toString(36);
-
-                        return 'css-' + hash;
-                    }
-                `
+                    return `export const css = () => "css-comptime-placeholder";`
                 }
 
                 // Collect css template literal usages in JS/TS files
@@ -94,24 +83,21 @@ export const cssExtractPlugin = (): PluginOption => {
 
             transform(code, id) {
                 if (id.match(/\.(js|jsx|ts|tsx)$/) && !id.includes("node_modules")) {
-                    // console.log("Transforming JS/TS file for CSS extraction:", id)
+                    // console.log("[Transform] ", id)
+                    // console.log(`Code before transformation:\n`, code)
 
                     let match
                     let transformedCode = code
 
-                    if (REGEX_CSS_TEMPLATE_LITERAL.test(code)) {
-                        transformedCode = transformedCode.replace(REGEX_JS_COMMENT, "")
-                    }
-
                     while ((match = REGEX_CSS_TEMPLATE_LITERAL.exec(code)) !== null) {
-                        const cssContent = match[1] || ""
+                        const cssContent = match[1] ?? ""
 
                         const { className, wrappedCss } = generateCSS(cssContent)
                         collectedStyles.set(className, wrappedCss)
 
-                        // console.log(`Extracted CSS for class ${className} from file ${id}`)
+                        // console.log(`Match (classname: "${className}"):\n`, match[0])
 
-                        transformedCode = transformedCode.replace(match[0], `'${className}'`)
+                        transformedCode = transformedCode.replace(match[0], `"${className}"`)
                     }
 
                     return transformedCode !== code ? transformedCode : null
