@@ -41,6 +41,6 @@
         "noUnusedParameters": false,
         "noPropertyAccessFromIndexSignature": false
     },
-    "include": ["*.ts", "comptime/**/*.ts", "global.d.ts"],
+    "include": ["*.ts", "comptime/**/*.ts", "preact-classlist.d.ts"],
     "exclude": ["node_modules", "dist"]
 }
