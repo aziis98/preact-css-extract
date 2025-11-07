@@ -123,7 +123,7 @@ Which results in a final CSS output similar to:
 }
 ```
 
-### ClassList Attribute
+### `classList` Attribute
 
 To enable the Preact `clsx` integration with the `classList` attribute, set it up as follows. In your application entry point, add:
 
@@ -133,7 +133,7 @@ import { setupPreactClasslist } from "preact-css-extract"
 setupPreactClasslist()
 ```
 
-And add a `types.d.ts` file to your project with the following content to extend the Preact JSX types:
+And add a global `types.d.ts` file to your project with the following content to extend the Preact JSX types:
 
 ```ts
 /// <reference path="../node_modules/preact-css-extract/preact-classlist.d.ts" />
@@ -158,6 +158,31 @@ Then use the `classList` prop with object notation, here is an example:
 ```
 
 This automatically merges with any existing `class` prop using clsx for proper class concatenation.
+
+Another useful technique to separate layout and themes or base styles from variants is the following
+
+```tsx
+const buttonStyle = css`
+    ...
+`
+const buttonPrimaryStyle = css`
+    ...
+`
+const buttonSecondaryStyle = css`
+    ...
+`
+
+...
+
+<button
+    classList={[
+        buttonStyle,
+        someCondition ? buttonPrimaryStyle : buttonSecondaryStyle
+    ]}
+>
+    Ok
+</button>
+```
 
 ## Installation
 
