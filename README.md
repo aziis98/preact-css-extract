@@ -1,6 +1,6 @@
 # preact-css-extract
 
-![NPM Version](https://img.shields.io/npm/v/preact-css-extract)
+[![NPM Version](https://img.shields.io/npm/v/preact-css-extract)](https://www.npmjs.com/package/preact-css-extract)
 
 This package provides the following two main features: a vite plugin for compile-time css extraction and a custom preact `classList` prop integration based on `clsx`.
 
@@ -221,7 +221,7 @@ For my needs this is already completely on par with the TailwindCSS "experience"
 
     I think this is a reasonable compromise as one can use specialized utility classes as in the example above to dynamically add styles, or just update styles directly with the `style` attribute.
 
--   CSS snippets are hashed to 6-character class names, I hope its enough to avoid collisions. Fire me an issue if you find any and we'll have a laugh at the examples together...
+-   CSS snippets are hashed to 6-character class names, I hope its enough to avoid collisions. File an issue if you find any and we'll have a laugh at the examples together...
 
 ## Improvements and Future Work
 
